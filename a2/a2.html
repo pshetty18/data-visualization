@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+  <head>
+      <title>Assignment 2</title>
+  </head>
+  <style> 
+  #bar {    
+      background-color: teal;    
+  }
+  </style>
+  <body>
+  <h1>Pratish Shetty</h1>
+    <h2>#01709610</h2>
+    <h3 class="course_title">Data Visualization (DSC 530/602-02)</h3>
+    <h3 class="assignment_no">Assignment #2</h3>
+    <p>This assignment is all my own work. I did not copy or rewrite the code from any other source except the code given in the assignment.</p>
+    <h1>1. Bar Chart</h1>
+    <script src="d3.js"></script>
+    <script src="http://www.cis.umassd.edu/~dkoop/dsc530-2017sp/a2/us-refugees.js" type="text/javascript"></script>
+    <script src="https://cdn.rawgit.com/dakoop/060aab964b7e9ca2de4bf22a4f0a8195/raw/96c87a554d935c085c7743251c424e134e381c42/us-refugees.js" type="text/javascript"></script>
+    <script>
+    
+      var margin = {left: 50, right: 40, top: 20, bottom: 50}
+      var wid = 500;
+      var high = 200;
+
+      var svg = d3.select("#bar")
+        .append("svg")
+        .attr("width", wid + margin.left + margin.right)
+        .attr("height", high + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", translate(margin.left, margin.top));
+
+      var year = getYear();
+      var total = getTotal();
+
+      function getYear(){
+        return refugees.map(function(r){
+          return r["Year"];
+        });
+      }
+
+      function getTotal(){
+        return refugees.map(function(r){
+          return r["Total"];
+        });
+      }
+
+      var xdomain = year;
+      var xrange = [0, wid];
+      var ydomain = [0, d3.max(total)];
+      var yrange = [high, 0];
+
+      var ax = d3.scaleBand()
+        .domain(xdomain)
+        .rangeRound(xrange)
+        .padding(0.05);
+
+      var xaxis = d3.axisBottom()
+        .scale(ax)
+        .tickValues(ax.domain().filter(function(val, index){
+          return index % 5 == 0;
+        }));
+
+      var ay = d3.scaleLinear()
+        .domain(ydomain)
+        .range(yrange);
+
+      var yaxis = d3.axisLeft()
+        .scale(ay)
+        .tickFormat(d3.formatPrefix(".0",1e3));
+
+      svg.append("g")
+        .attr("transform", translate(0, high))
+        .call(xaxis);
+
+      svg.append("g")
+        .call(yaxis);
+
+      svg.append("text")
+        .text("Year")
+        .attr("text-anchor", "middle")
+        .attr("transform", translate(wid / 2, high + 40));
+
+      svg.append("text")
+        .text("Number of Refugees")
+        .attr("text-anchor", "middle")
+        .attr("transform", translate(-40, high / 2)
+           + " " + rotate(0, 0, -90));
+
+      svg.selectAll(".rect")
+        .data(refugees)
+        .enter()
+        .append("rect")
+        .attr("class", "rect")
+        .attr("x", function(r) {
+          return ax(r["Year"]);
+        })
+        .attr("y", function(r) {
+          return ay(r["Total"]);
+        })
+        .attr("width", ax.bandwidth())
+        .attr("height", function(r) {
+          return high - ay(r["Total"]);
+        });
+
+      function translate (x, y){
+        return "translate(" + x + "," + y + ")";
+      }
+
+      function rotate (px, py, r){
+        return "rotate(" + r + "" + px + "," + py + ")";
+      }
+
+      function getkeys(){
+        var ref = refugees[0];
+        var keys = Object.keys(ref);
+        return keys.filter(function(key){
+          return !["Year", "Total"].includes(key);
+        });
+      }
+    </script>
+  </body>
+</html>

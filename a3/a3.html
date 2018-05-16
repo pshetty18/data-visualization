@@ -1,0 +1,204 @@
+<!Doctype html>
+  <head>
+    <title>Assignment 3</title>
+  </head>
+  <body>
+  <h1>Pratish Shetty</h1>
+    <h2>#01709610</h2>
+    <h3 class="course_title">Data Visualization (DSC 530/602-02)</h3>
+    <h3 class="assignment_no">Assignment #3</h3>
+    <p>This assignment is all my own work. I did not copy or rewrite the code from any other source except the code given in the assignment.</p>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js" type="text/javascript"></script>
+
+    <script>
+      var map = {
+        wid: 500,
+        high: 200
+      };
+
+      var graph = {
+        wid: 500,
+        high: 200
+      };
+
+
+      d3.queue()
+        .defer(d3.json, "http://www.cis.umassd.edu/~dkoop/dsc530-2017sp/a3/fifa-17-women.json")
+        .defer(d3.json, "http://www.cis.umassd.edu/~dkoop/dsc530-2017sp/a3/guardian-16-men.json")
+        .defer(d3.json, "http://www.cis.umassd.edu/~dkoop/dsc530-2017sp/a3/soccer-teammates-men.json")
+        .defer(d3.json, "https://cdn.rawgit.com/johan/world.geo.json/master/countries.geo.json")
+        .await(processData);
+
+  
+      var womenSvg = d3.select("#Women").append("svg")
+      	.attr("width", map.wid)
+    	  .attr("height", map.high);
+
+      var projection = d3.geoEquirectangular()
+      .scale(80)
+      .translate([map.wid, map.high]);
+
+      var geopath = d3.geoPath()
+        .projection(projection);
+      
+      var data = d3.geoGraticule()
+        .step([0, 0]);
+
+      womenSvg.append("path")
+        .datum(data)
+        .attr("class", "data")
+        .attr("d", geopath)
+        
+      function createMap(errors, womenData, menData, teamData, worldData) {
+        womenSvg.append("g")
+          .selectAll("path.women.country")
+          .data(worldData.features)
+          .enter()
+          .append("path")
+          .attr("class", "women country")
+          .attr("d", geopath)
+
+        menSvg.append("g")
+          .selectAll("path.men.Nationality")
+          .data(worldData.features)
+          .enter()
+          .append("path")
+          .attr("class", "men country")
+          .attr("d", geopath)
+
+	      var wcount = getwCounts(womenData);
+	      var minwcount = d3.min(wcount.values());
+	      var maxwcount = d3.max(wcount.values());
+
+	      var wcolors = palette(minwcount, maxwcount);
+
+	      var mcount = getmCounts(menData);
+	      var minmcount = d3.min(mcount.values());
+	      var maxmcount = d3.max(mcount.values());
+
+	      var mcolors = palette(minmcount, maxmcount);
+      }
+
+      function printmap(map){
+        for(var i = 0; i < map.keys().length; i++){
+          var key = map.keys()[i];
+          var value = map.get(key);
+          console.log(key + ": " + value);
+        }
+      }
+
+      function processData(errors, data) {
+        var w = 800;
+        var h = 400;
+        createMap(data, "Women", projection, w, h);
+        createMap(data, "Men", projection2, w, h);
+      }
+
+      var menSvg = d3.select("#Men").append("svg")
+        .attr("width", map.wid)
+        .attr("height", map.high);
+
+      var projection2 = d3.geoEquirectangular()
+      .scale(80)
+      .translate([map.wid, map.high]);
+
+      var geopath2 = d3.geoPath()
+        .projection(projection2);
+      
+      var data2 = d3.geoGraticule()
+        .step([0, 0]);
+
+      menSvg.append("path")
+        .datum(data2)
+        .attr("class", "data")
+        .attr("d", geopath2)
+  
+  
+   	</script>
+<h1>1. Top 20 Women's Soccer Players</h1>
+    <div id="Women"></div>
+   	<h1>2. Top 100 Men's Soccer Players</h1>
+    <div id="Men"></div>
+    <h1>3. Teammate Graph</h1>
+<svg width="960" height="600"></svg>
+
+<script>
+
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height");
+
+var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+var simulation = d3.forceSimulation()
+    .force("link", d3.forceLink().id(function(d) { return d.id; }))
+    .force("charge", d3.forceManyBody())
+    .force("center", d3.forceCenter(width / 2, height / 2));
+
+d3.json("http://www.cis.umassd.edu/~dkoop/dsc530-2017sp/a3/soccer-teammates-men.json", function(error, graph) {
+  if (error) throw error;
+
+  var link = svg.append("g")
+      .attr("class", "links")
+    .selectAll("line")
+    .data(graph.value1)
+    .enter().append("line")
+      .attr("stroke-width", function(d) { return Math.sqrt(d.value1); });
+
+  var node = svg.append("g")
+      .attr("class", "nodes")
+    .selectAll("circle")
+    .data(graph.value2)
+    .enter().append("circle")
+      .attr("r", 5)
+      .attr("fill", function(d) { return color(d.value2); })
+      .call(d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended));
+
+  node.append("title")
+      .text(function(d) { return d; });
+
+  simulation
+      .nodes(graph.nodes)
+      .on("tick", ticked);
+
+  simulation.force("link")
+      .links(graph.links);
+
+  function ticked() {
+    link
+        .attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node
+        .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+  }
+});
+
+function dragstarted(d) {
+  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+}
+
+function dragged(d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+}
+
+function dragended(d) {
+  if (!d3.event.active) simulation.alphaTarget(0);
+  d.fx = null;
+  d.fy = null;
+}
+
+</script>
+
+  </body>
+</html>

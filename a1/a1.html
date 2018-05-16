@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+	<head>
+		<title>Assignment 1</title>
+		<link href="a1.css" rel='stylesheet'>
+	</head>
+	<body>
+		<h1>Pratish Shetty</h1>
+		<h2>#01709610</h2>
+		<h3 class="course_title">Data Visualization (DSC 530/602-02)</h3>
+		<h3 class="assignment_no">Assignment #1</h3>
+		<p>This assignment is all my own work. I did not copy or rewrite the code from any other source except the code given in the assignment.</p>
+		<h3 class="course_title">Initials:</h3>
+		<svg id="initials" width="250" height="150">
+ 			<line x1="20" y1="20" x2="20" y2="100" stroke-width="5" stroke="red"/>
+ 			<line x1="20" y1="20" x2="60" y2="20" stroke-width="5" stroke="red"/>
+ 			<line x1="60" y1="20" x2="60" y2="60" stroke-width="5" stroke="red"/>
+ 			<line x1="60" y1="60" x2="20" y2="60" stroke-width="5" stroke="red"/>
+ 			<line x1="100" y1="20" x2="100" y2="100" stroke-width="5" stroke="red"/>
+ 			<line x1="100" y1="20" x2="140" y2="20" stroke-width="5" stroke="red"/>
+ 			<line x1="140" y1="20" x2="140" y2="60" stroke-width="5" stroke="red"/>
+ 			<line x1="140" y1="60" x2="100" y2="60" stroke-width="5" stroke="red"/>
+ 			<line x1="100" y1="60" x2="140" y2="100" stroke-width="5" stroke="red"/>
+ 			<line x1="180" y1="20" x2="220" y2="20" stroke-width="5" stroke="red"/>
+ 			<line x1="180" y1="20" x2="180" y2="60" stroke-width="5" stroke="red"/>
+ 			<line x1="180" y1="60" x2="220" y2="60" stroke-width="5" stroke="red"/>
+ 			<line x1="220" y1="60" x2="220" y2="100" stroke-width="5" stroke="red"/>
+ 			<line x1="220" y1="100" x2="180" y2="100" stroke-width="5" stroke="red"/>
+ 		</svg>
+ 		<h3 class="course_title">Barchart:</h3>
+ 		<div id="chart">
+ 		</div>
+ 		<script type="text/javascript"> 				
+ 			var width = 600, height = 400;
+ 			var t = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+			var s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+			s.setAttribute("width", width);
+			s.setAttribute("height", height);
+			var main = document.getElementById("chart");
+			main.appendChild(s);
+
+			function addEltToSVG(svg, name, attrs){
+			  var element = document.createElementNS("http://www.w3.org/2000/svg", name);
+			  if (attrs === undefined) attrs = {};
+			  for (var key in attrs) {
+			    element.setAttributeNS(null, key, attrs[key]);
+			  }
+			  svg.appendChild(element);
+			}
+			
+			var a = [146158, 27206, 19946, 36507, 111363, 207116, 159252, 98096, 61218, 70393, 67704, 62146, 64528, 76483, 107070, 122066, 113389, 132531, 119448, 112981, 99974, 76403, 70488, 77080, 85525, 73147, 69886, 27131, 28403, 52873, 53813, 41223, 48282, 60191, 74654, 73311, 56424, 58238, 69926, 69987, 69933, 84995];
+
+			a.forEach(function(d, i) {
+			  var rect = addEltToSVG(s, "rect", 
+			                         {"x": 20+10*i, 
+			                          "y": 10,
+			                          "width": 10, 
+			                          "height": d*(0.001),                                    
+			                          "transform": "translate(400,50) scale(-1,1) rotate(180 180 90)",
+			                          "fill": "blue",
+			                          "stroke": "black"})			  
+			})
+ 		</script>
+ 		
+		</div>
+	</body>
+</html>
